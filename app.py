@@ -93,7 +93,12 @@ recipients=["dimchev.ilia@gmail.com"])
 recipients=[email])
             confirmation.body = (
                 f"Здравейте, {name}!\n\n"
+<<<<<<< HEAD
                 "Благодарим, че се свърза� свържем с вас възможно най-скоро.\n\n"
+=======
+                "Благодарим, че се свърза� свържем с вас 
+възможно най-скоро.\n\n"
+>>>>>>> 30fb739 (last commid app.py)
                 "Поздрави,\nTROT.BG"
             )
             mail.send(confirmation)
@@ -143,4 +148,5 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
+
 
