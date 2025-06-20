@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
@@ -63,6 +63,15 @@ def home():
 
         return redirect(url_for("thank_you"))
     return render_template("index.html")
+
+@app.route("/admin")
+def admin_panel():
+    password = request.args.get("pass")
+    if password != os.environ.get("ADMIN_PASSWORD"):
+        abort(403)
+
+    requests = ServiceRequest.query.order_by(ServiceRequest.id.desc()).all()
+    return render_template("admin.html", requests=requests)
 
 @app.route("/thank-you")
 def thank_you():
