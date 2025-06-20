@@ -1,6 +1,32 @@
 from flask import Flask, render_template, request, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail, Message
+import os
 
 app = Flask(__name__)
+
+# Настройки за база данни
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///requests.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+# Модел за запитване
+class ServiceRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+
+# Настройки за имейл
+app.config['MAIL_SERVER'] = 'smtp.example.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME')
+
+mail = Mail(app)
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -8,7 +34,17 @@ def home():
         name = request.form.get("name")
         email = request.form.get("email")
         message = request.form.get("message")
-        # TODO: обработка на заявката (напр. запис в БД или изпращане на имейл)
+
+        # Запазване в база данни
+        new_request = ServiceRequest(name=name, email=email, message=message)
+        db.session.add(new_request)
+        db.session.commit()
+
+        # Изпращане на имейл
+        msg = Message("Ново запитване от TROT", recipients=["your@email.com"])
+        msg.body = f"Име: {name}\nИмейл: {email}\nСъобщение: {message}"
+        mail.send(msg)
+
         return redirect(url_for("thank_you"))
     return render_template("index.html")
 
@@ -17,4 +53,6 @@ def thank_you():
     return render_template("thank_you.html")
 
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
