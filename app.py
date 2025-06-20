@@ -1,3 +1,4 @@
+# coding: cp855
 from flask import Flask, render_template, request, redirect, url_for, send_file, abort, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
@@ -5,9 +6,10 @@ from flask_login import LoginManager, login_user, login_required, logout_user, U
 import os
 import csv
 import io
-from dotenv import load_dotenv
 
-load_dotenv()
+# Не използваме dotenv (не се препоръчва в cPanel)
+# Вместо това, настрой параметрите чрез cPanel > Setup Python App > 
+
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "secret")
@@ -15,7 +17,6 @@ app.secret_key = os.environ.get("SECRET_KEY", "secret")
 # Настройки за база данни
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///requests.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 db = SQLAlchemy(app)
 
 # Настройки за имейл
@@ -75,24 +76,26 @@ def home():
         email = request.form.get("email")
         message = request.form.get("message")
 
-        # Запазване в база данни
         new_request = ServiceRequest(name=name, email=email, message=message)
         db.session.add(new_request)
         db.session.commit()
 
-        # Имейл до администратора
-        admin_msg = Message("Ново запитване от TROT", recipients=["dimchev.ilia@gmail.com"])
-        admin_msg.body = f"Име: {name}\nИмейл: {email}\nСъобщение: {message}"
-        mail.send(admin_msg)
+        try:
+            admin_msg = Message("Ново запитване от TROT", 
+recipients=["dimchev.ilia@gmail.com"])
+            admin_msg.body = f"Име: {name}\nИмейл: {email}\nСъобщение: {message}"
+            mail.send(admin_msg)
 
-        # Потвърждение до клиента
-        confirmation = Message("Благодарим за запитването към TROT", recipients=[email])
-        confirmation.body = (
-            f"Здравейте, {name}!\n\n"
-            "Благодарим, че се свързахте с нас. Ще се свържем с вас възможно най-скоро.\n\n"
-            "Поздрави,\nTROT.BG"
-        )
-        mail.send(confirmation)
+            confirmation = Message("Благодарим за запитването към TROT", 
+recipients=[email])
+            confirmation.body = (
+                f"Здравейте, {name}!\n\n"
+                "Благодарим, че се свърза� свържем с вас възможно най-скоро.\n\n"
+                "Поздрави,\nTROT.BG"
+            )
+            mail.send(confirmation)
+        except Exception as e:
+            print("Имейл грешка:", e)
 
         return redirect(url_for("thank_you"))
     return render_template("index.html")
@@ -132,7 +135,9 @@ def export_csv():
                      download_name='trot_requests.csv',
                      as_attachment=True)
 
+# Само за локална разработка
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
+
