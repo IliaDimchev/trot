@@ -14,7 +14,7 @@ def home():
 
 @app.route("/thank-you")
 def thank_you():
-    return "Благодарим Ви за запитването! Ще се свържем с Вас скоро."
+    return render_template("thank_you.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
