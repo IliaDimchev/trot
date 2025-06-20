@@ -21,7 +21,8 @@ class ServiceRequest(db.Model):
 # Настройки за имейл
 app.config['MAIL_SERVER'] = 'smtp.abv.bg'
 app.config['MAIL_PORT'] = 465
-app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = True  # Вместо TLS
+app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME')
@@ -44,6 +45,18 @@ def home():
         msg = Message("Ново запитване от TROT", recipients=["your@email.com"])
         msg.body = f"Име: {name}\nИмейл: {email}\nСъобщение: {message}"
         mail.send(msg)
+
+        # Потвърдителен имейл към клиента
+        confirmation = Message("Благодарим за запитването към TROT",
+                       recipients=[email])
+        
+        confirmation.body = (
+            f"Здравей, {name}!\n\n"
+            "Благодарим, че се свърза с нас. Ще се свържем с теб възможно най-скоро.\n\n"
+         "Поздрави,\nTROT Сервиз"
+        )
+        
+        mail.send(confirmation)
 
         return redirect(url_for("thank_you"))
     return render_template("index.html")
