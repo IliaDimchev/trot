@@ -1,7 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
+from dotenv import load_dotenv
+
 import os
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -55,7 +58,7 @@ def home():
             "Благодарим, че се свърза с нас. Ще се свържем с теб възможно най-скоро.\n\n"
          "Поздрави,\nTROT Сервиз"
         )
-        
+
         mail.send(confirmation)
 
         return redirect(url_for("thank_you"))
