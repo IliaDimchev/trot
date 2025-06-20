@@ -71,6 +71,9 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    print("MAIL_USERNAME:", app.config['MAIL_USERNAME'])
+    print("MAIL_PASSWORD:", app.config['MAIL_PASSWORD'])
+
     if request.method == "POST":
         name = request.form.get("name")
         email = request.form.get("email")
@@ -90,7 +93,7 @@ recipients=["dimchev.ilia@gmail.com"])
 recipients=[email])
             confirmation.body = (
                 f"Здравейте, {name}!\n\n"
-                "Благодарим, че се свърза� свържем с вас възможно най-скоро.\n\n"
+                "Благодарим, че се свърза� свържем с вас възможно най-скоро.\n\n"
                 "Поздрави,\nTROT.BG"
             )
             mail.send(confirmation)
