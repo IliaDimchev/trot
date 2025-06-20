@@ -95,7 +95,9 @@ recipients=[email])
             )
             mail.send(confirmation)
         except Exception as e:
-            print("Имейл грешка:", e)
+            print("Exception:", e)
+        
+            #   print("Имейл грешка:", e)
 
         return redirect(url_for("thank_you"))
     return render_template("index.html")
