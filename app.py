@@ -71,9 +71,6 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    print("MAIL_USERNAME:", app.config['MAIL_USERNAME'])
-    print("MAIL_PASSWORD:", app.config['MAIL_PASSWORD'])
-
     if request.method == "POST":
         name = request.form.get("name")
         email = request.form.get("email")
