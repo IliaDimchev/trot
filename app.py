@@ -146,6 +146,12 @@ def home():
 def thank_you():
     return render_template("thank_you.html")
 
+@app.route("/email/opened/<int:email_id>")
+def email_opened(email_id):
+    # Тук може да запишеш в лог, база данни и т.н.
+    print(f"Имейл с ID {email_id} е отворен.")
+    return b"", 204  # Празен отговор
+
 @app.route("/admin")
 @login_required
 def admin_panel():
