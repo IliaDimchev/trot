@@ -126,12 +126,21 @@ def home():
                 charset='utf-8'
 )
 
-# Прикачване на логото към имейла
-            with app.open_resource("static/images/Trot-Logo.png") as img:
-                logo = MIMEImage(img.read())
-                logo.add_header('Content-ID', '<logo>')
-                logo.add_header("Content-Disposition", "inline", filename="Trot-Logo.png")
-                confirmation.attach(logo)
+            # Прикачване на логото към имейла
+            # with app.open_resource("static/images/Trot-Logo.png") as img:
+            #     logo = MIMEImage(img.read())
+            #     logo.add_header('Content-ID', '<logo>')
+            #     logo.add_header("Content-Disposition", "inline", filename="Trot-Logo.png")
+            #     confirmation.attach(logo)
+
+            with open("static/images/Trot-Logo.png", "rb") as f:
+                logo_data = f.read()
+
+            # За confirmation – ново MIMEImage
+            confirmation_logo = MIMEImage(logo_data, name="Trot-Logo.png")
+            confirmation_logo.add_header("Content-ID", "<logo>")
+            confirmation_logo.add_header("Content-Disposition", "inline", filename="Trot-Logo.png")
+            confirmation.attach(confirmation_logo)
 
             mail.send(confirmation)
         except Exception as e:
