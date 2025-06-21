@@ -5,6 +5,7 @@ from flask_mail import Mail, Message
 from flask_login import LoginManager, login_user, login_required, logout_user, UserMixin, current_user
 from email.header import Header
 from email.utils import formataddr
+from email.mime.image import MIMEImage
 import os
 import csv
 import io
@@ -106,18 +107,28 @@ def home():
 
             mail.send(admin_msg)
 
-            confirmation = Message(
-            subject=str(Header("TROT.BG - Request Received", 'utf-8')),
-            recipients=[email],
-            sender=formatted_sender,
-            charset='utf-8')
-            
-            confirmation.body = (
-            f"Здравейте, {name}!\n\n"
-            "Благодарим, че се свързахте с нас. Ще се свържем с вас възможно най-скоро.\n\n"
-            "Поздрави,\nTROT.BG")
+            html_body = render_template("email/confirmation.html", name=name, email_id=email_id)
+            plain_text_body = (
+                f"Здравейте, {name}!\n\n"
+                "Благодарим ви, че се свързахте с нас. Ще се свържем с вас възможно най-скоро.\n\n"
+                "Можете да посетите нашия сайт: https://trot.bg\n\n"
+                "Поздрави,\nTROT.BG")
 
-            confirmation.html = render_template("email_confirmation.html", name=name)
+            confirmation = Message(
+                subject=str(Header("Благодарим за запитването към TROT", 'utf-8')),
+                recipients=[email],
+                body=plain_text_body,
+                html=html_body,
+                sender=formatted_sender,
+                charset='utf-8'
+)
+
+# Прикачване на логото към имейла
+            with app.open_resource("static/images/Trot-Logo.png") as img:
+                logo = MIMEImage(img.read())
+                logo.add_header('Content-ID', '<logo>')
+                logo.add_header("Content-Disposition", "inline", filename="Trot-Logo.png")
+                confirmation.attach(logo)
 
             mail.send(confirmation)
         except Exception as e:
