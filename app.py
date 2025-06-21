@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from flask_login import LoginManager, login_user, login_required, logout_user, UserMixin, current_user
 from email.header import Header
+from email.utils import formataddr
 import os
 import csv
 import io
@@ -91,10 +92,16 @@ def home():
         db.session.commit()
 
         try:
+            # Красив "From" адрес
+            sender_name = str(Header("TROT.BG", 'utf-8'))
+            sender_email = "noreply@trot.bg"
+            formatted_sender = formataddr((sender_name, sender_email))
+
             admin_msg = Message(
             subject=str(Header("Ново запитване от TROT", 'utf-8')),
             recipients=["dimchev.ilia@gmail.com"],
             body=f"Име: {name}\nИмейл: {email}\nСъобщение: {message}",
+            sender=formatted_sender,
             charset='utf-8')
 
             mail.send(admin_msg)
@@ -102,6 +109,7 @@ def home():
             confirmation = Message(
             subject=str(Header("Благодарим за запитването към TROT", 'utf-8')),
             recipients=[email],
+            sender=formatted_sender,
             charset='utf-8')
             
             confirmation.body = (
