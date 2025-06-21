@@ -90,18 +90,26 @@ def home():
         db.session.commit()
 
         try:
-            admin_msg = Message("Ново запитване от TROT", 
-recipients=["dimchev.ilia@gmail.com"])
-            admin_msg.body = f"Име: {name}\nИмейл: {email}\nСъобщение: {message}"
+            admin_msg = Message(
+            subject="Ново запитване от TROT",
+            recipients=["dimchev.ilia@gmail.com"],
+            body=f"Име: {name}\nИмейл: {email}\nСъобщение: {message}",
+            charset='utf-8')
+
             mail.send(admin_msg)
 
-            confirmation = Message("Благодарим за запитването към TROT", 
-recipients=[email])
+            confirmation = Message(
+            subject="Благодарим за запитването към TROT",
+            recipients=[email],
+            charset='utf-8')
+            
             confirmation.body = (
-                f"Здравейте, {name}!\n\n"
-                "Благодарим, че се свърза� свържем с вас възможно най-скоро.\n\n"
-                "Поздрави,\nTROT.BG"
-            )
+            f"Здравейте, {name}!\n\n"
+            "Благодарим, че се свързахте с нас. Ще се свържем с вас възможно най-скоро.\n\n"
+            "Поздрави,\nTROT.BG")
+
+            confirmation.html = render_template("email_confirmation.html", name=name)
+
             mail.send(confirmation)
         except Exception as e:
             print("Exception:", e)
