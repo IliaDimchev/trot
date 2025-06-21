@@ -20,13 +20,22 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # Настройки за имейл
-app.config['MAIL_SERVER'] = 'smtp.abv.bg'
+# app.config['MAIL_SERVER'] = 'smtp.abv.bg'
+# app.config['MAIL_PORT'] = 465
+# app.config['MAIL_USE_SSL'] = True
+# app.config['MAIL_USE_TLS'] = False
+# app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+# app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+# app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME')
+
+# Настройки за имейл
+app.config['MAIL_SERVER'] = 'smtp.trot.bg'  # Това трябва да е SMTP на хостинга
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_USERNAME'] = 'noreply@trot.bg'
+app.config['MAIL_PASSWORD'] = os.environ.get('NOREPLY_PASSWORD')  # Или въведи паролата директно
+app.config['MAIL_DEFAULT_SENDER'] = 'noreply@trot.bg'
 
 mail = Mail(app)
 
