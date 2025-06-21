@@ -29,7 +29,7 @@ db = SQLAlchemy(app)
 # app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME')
 
 # Настройки за имейл
-app.config['MAIL_SERVER'] = 'smtp.trot.bg'  # Това трябва да е SMTP на хостинга
+app.config['MAIL_SERVER'] = 'trot.bg'  # Това трябва да е SMTP на хостинга
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USE_TLS'] = False
