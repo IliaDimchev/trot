@@ -107,9 +107,6 @@ def home():
 
             mail.send(admin_msg)
 
-
-            email_id = new_request.id  # За track pixel
-
             html_body = render_template("email/confirmation.html", name=name, email_id=email_id)
             plain_text_body = (
                 f"Здравейте, {name}!\n\n"
