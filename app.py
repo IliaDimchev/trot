@@ -1,4 +1,4 @@
-# coding: utf-8
+# coding: cp855
 from flask import Flask, render_template, request, redirect, url_for, send_file, abort, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
@@ -9,35 +9,51 @@ import os
 import csv
 import io
 
+# Не използваме dotenv (не се препоръчва в cPanel)
+# Вместо това, настрой параметрите чрез cPanel > Setup Python App > 
+
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "secret")
 
 # Настройки за база данни
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///requests.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 # Настройки за имейл
-app.config['MAIL_SERVER'] = 'trot.bg'
+# app.config['MAIL_SERVER'] = 'smtp.abv.bg'
+# app.config['MAIL_PORT'] = 465
+# app.config['MAIL_USE_SSL'] = True
+# app.config['MAIL_USE_TLS'] = False
+# app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+# app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+# app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME')
+
+# Настройки за имейл
+app.config['MAIL_SERVER'] = 'trot.bg'  # Това трябва да е SMTP на хостинга
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USERNAME'] = 'noreply@trot.bg'
-app.config['MAIL_PASSWORD'] = os.environ.get('NOREPLY_PASSWORD')
+app.config['MAIL_PASSWORD'] = os.environ.get('NOREPLY_PASSWORD')  # Или въведи паролата директно
 app.config['MAIL_DEFAULT_SENDER'] = 'noreply@trot.bg'
 
 mail = Mail(app)
-db = SQLAlchemy(app)
 
+# Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+# Модел за запитване
 class ServiceRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     message = db.Column(db.Text, nullable=False)
 
+# Потребител за админ
 class Admin(UserMixin):
     id = 1
     username = "admin"
@@ -76,31 +92,38 @@ def home():
         db.session.commit()
 
         try:
+            # Красив "From" адрес
             sender_name = str(Header("TROT.BG", 'utf-8'))
             sender_email = "noreply@trot.bg"
             formatted_sender = formataddr((sender_name, sender_email))
 
             admin_msg = Message(
-                subject="=?utf-8?b?" + Header(f"Запитване от {name} - TROT", 'utf-8').encode() + "?=",
-                recipients=["dimchev.ilia@gmail.com"],
-                body=f"Name: {name}\nEmail: {email}\nMessage: {message}",
-                sender=formatted_sender,
-                charset='utf-8')
+            subject=str(Header(f"Request from {name} - TROT", 'utf-8')),
+            recipients=["dimchev.ilia@gmail.com"],
+            body=f"Name: {name}\nEmail: {email}\nMessage: {message}",
+            sender=formatted_sender,
+            charset='utf-8')
 
             mail.send(admin_msg)
 
             confirmation = Message(
-                subject="=?utf-8?b?" + Header("TROT.BG - Потвърждение на запитване", 'utf-8').encode() + "?=",
-                recipients=[email],
-                sender=formatted_sender,
-                charset='utf-8')
+            subject=str(Header("TROT.BG - Request Received", 'utf-8')),
+            recipients=[email],
+            sender=formatted_sender,
+            charset='utf-8')
+            
+            confirmation.body = (
+            f"Здравейте, {name}!\n\n"
+            "Благодарим, че се свързахте с нас. Ще се свържем с вас възможно най-скоро.\n\n"
+            "Поздрави,\nTROT.BG")
 
-            confirmation.body = render_template("email_confirmation.txt", name=name)
             confirmation.html = render_template("email_confirmation.html", name=name)
 
             mail.send(confirmation)
         except Exception as e:
-            print("Email sending error:", e)
+            print("Exception:", e)
+        
+            #   print("Имейл грешка:", e)
 
         return redirect(url_for("thank_you"))
     return render_template("index.html")
@@ -140,7 +163,9 @@ def export_csv():
                      download_name='trot_requests.csv',
                      as_attachment=True)
 
+# Само за локална разработка
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
+
