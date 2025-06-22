@@ -5,6 +5,7 @@ from flask_mail import Mail, Message
 from flask_login import LoginManager, login_user, login_required, logout_user, UserMixin, current_user
 from email.header import Header
 from email.utils import formataddr
+import time
 import os
 import csv
 import io
@@ -51,6 +52,7 @@ class ServiceRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(20), nullable=True)
     message = db.Column(db.Text, nullable=False)
 
 # Потребител за админ
@@ -83,11 +85,24 @@ def logout():
 @app.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "POST":
+        if request.form.get("website"):  # honeypot
+            print("SPAM: Honeypot triggered")
+            return redirect(url_for("thank_you"))
+
+        try:
+            start_time = float(request.form.get("form_start", 0))
+            if time.time() - start_time < 2:
+                print("SPAM: Too fast")
+                return redirect(url_for("thank_you"))
+        except ValueError:
+            return redirect(url_for("thank_you"))
+
         name = request.form.get("name")
         email = request.form.get("email")
+        phone = request.form.get("phone")
         message = request.form.get("message")
 
-        new_request = ServiceRequest(name=name, email=email, message=message)
+        new_request = ServiceRequest(name=name, email=email, phone=phone, message=message)
         db.session.add(new_request)
         db.session.commit()
 
@@ -100,7 +115,7 @@ def home():
             admin_msg = Message(
             subject=str(Header(f"Request from {name} - TROT", 'utf-8')),
             recipients=["dimchev.ilia@gmail.com"],
-            body=f"Name: {name}\nEmail: {email}\nMessage: {message}",
+            body=f"Name: {name}\nEmail: {email}\nPhone: {phone}\nMessage: {message}",
             sender=formatted_sender,
             charset='utf-8')
 
@@ -126,7 +141,7 @@ def home():
             #   print("Имейл грешка:", e)
 
         return redirect(url_for("thank_you"))
-    return render_template("index.html")
+    return render_template("index.html", timestamp=time.time())
 
 @app.route("/thank-you")
 def thank_you():
@@ -155,7 +170,7 @@ def export_csv():
     writer.writerow(["ID", "Име", "Имейл", "Съобщение"])
 
     for req in ServiceRequest.query.all():
-        writer.writerow([req.id, req.name, req.email, req.message])
+        writer.writerow([req.id, req.name, req.email, req.phone, req.message])
 
     output.seek(0)
     return send_file(io.BytesIO(output.getvalue().encode()),

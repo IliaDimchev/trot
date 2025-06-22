@@ -19,6 +19,7 @@
       <div class="border border-neutral-700 p-4 rounded bg-neutral-800">
         <p><strong>Име:</strong> {{ req.name }}</p>
         <p><strong>Имейл:</strong> {{ req.email }}</p>
+        <p><strong>Телефон:</strong> {{ req.phone }}</p>
         <p><strong>Съобщение:</strong> {{ req.message }}</p>
         <form action="{{ url_for('delete_request', request_id=req.id) }}" method="post" class="mt-2">
           <button type="submit" class="text-sm text-red-400 hover:underline">Изтрий</button>
