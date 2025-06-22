@@ -6,6 +6,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, U
 from email.header import Header
 from email.utils import formataddr
 import time
+import requests
 import os
 import csv
 import io
@@ -39,6 +40,8 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USERNAME'] = 'noreply@trot.bg'
 app.config['MAIL_PASSWORD'] = os.environ.get('NOREPLY_PASSWORD')  # Или въведи паролата директно
 app.config['MAIL_DEFAULT_SENDER'] = 'noreply@trot.bg'
+RECAPTCHA_SECRET = os.environ.get("RECAPTCHA_SECRET_KEY")
+RECAPTCHA_SITE_KEY = os.environ.get("RECAPTCHA_SITE_KEY")
 
 mail = Mail(app)
 
@@ -96,6 +99,18 @@ def home():
                 return redirect(url_for("thank_you"))
         except ValueError:
             return redirect(url_for("thank_you"))
+        
+        recaptcha_response = request.form.get('g-recaptcha-response')
+        verify_url = "https://www.google.com/recaptcha/api/siteverify"
+        resp = requests.post(verify_url, data={
+            'secret': RECAPTCHA_SECRET,
+            'response': recaptcha_response
+        })
+        recaptcha_result = resp.json()
+
+        if not recaptcha_result.get("success"):
+            flash("Неуспешна проверка от reCAPTCHA. Моля, опитайте отново.", "error")
+            return redirect(url_for("home"))
 
         name = request.form.get("name")
         email = request.form.get("email")
@@ -141,7 +156,7 @@ def home():
             #   print("Имейл грешка:", e)
 
         return redirect(url_for("thank_you"))
-    return render_template("index.html", timestamp=time.time())
+    return render_template("index.html", timestamp=time.time(), recaptcha_site_key=RECAPTCHA_SITE_KEY)
 
 @app.route("/thank-you")
 def thank_you():
