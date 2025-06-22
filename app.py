@@ -100,7 +100,7 @@ def home():
     recaptcha_token = request.form.get("g-recaptcha-response")
     if not verify_recaptcha(recaptcha_token):
         flash("Моля, потвърдете, че не сте робот.")
-        print(verify_recaptcha(recaptcha_token))
+        print('verification failed')
 
     if request.method == "POST":
         if request.form.get("website"):  # honeypot
