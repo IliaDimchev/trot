@@ -35,15 +35,21 @@
       <textarea name="message" placeholder="С какво можем да помогнем?" rows="5" required
             class="w-full px-4 py-2 rounded bg-neutral-800 border border-neutral-700 text-white"></textarea>
 
-      <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+      <input type="hidden" name="g-recaptcha-response" id="recaptcha_token">
       <button type="submit"
               class="w-full bg-amber-500 hover:bg-amber-600 text-black font-semibold py-2 rounded">
         Изпрати запитване
       </button>
     </form>
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_site_key }}"></script>
 
   </main>
-
+  <script>
+    grecaptcha.ready(function() {
+      grecaptcha.execute('{{ recaptcha_site_key }}', {action: 'submit'}).then(function(token) {
+         document.getElementById('recaptcha_token').value = token;
+      });
+    });
+  </script>
 </body>
 </html>

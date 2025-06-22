@@ -40,7 +40,7 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USERNAME'] = 'noreply@trot.bg'
 app.config['MAIL_PASSWORD'] = os.environ.get('NOREPLY_PASSWORD')  # Или въведи паролата директно
 app.config['MAIL_DEFAULT_SENDER'] = 'noreply@trot.bg'
-RECAPTCHA_SECRET = os.environ.get("RECAPTCHA_SECRET_KEY")
+RECAPTCHA_SECRET_KEY = os.environ.get("RECAPTCHA_SECRET_KEY")
 RECAPTCHA_SITE_KEY = os.environ.get("RECAPTCHA_SITE_KEY")
 
 mail = Mail(app)
@@ -63,6 +63,16 @@ class Admin(UserMixin):
     id = 1
     username = "admin"
     password = os.environ.get("ADMIN_PASSWORD")
+
+def verify_recaptcha(token):
+    url = "https://www.google.com/recaptcha/api/siteverify"
+    payload = {
+        "secret": RECAPTCHA_SECRET_KEY,
+        "response": token
+    }
+    r = requests.post(url, data=payload)
+    result = r.json()
+    return result.get("success", False) and result.get("score", 0) > 0.5
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -87,6 +97,11 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    recaptcha_token = request.form.get("g-recaptcha-response")
+    if not verify_recaptcha(recaptcha_token):
+        flash("Моля, потвърдете, че не сте робот.")
+        return redirect(url_for("home"))
+
     if request.method == "POST":
         if request.form.get("website"):  # honeypot
             print("SPAM: Honeypot triggered")
@@ -99,18 +114,6 @@ def home():
                 return redirect(url_for("thank_you"))
         except ValueError:
             return redirect(url_for("thank_you"))
-        
-        recaptcha_response = request.form.get('g-recaptcha-response')
-        verify_url = "https://www.google.com/recaptcha/api/siteverify"
-        resp = requests.post(verify_url, data={
-            'secret': RECAPTCHA_SECRET,
-            'response': recaptcha_response
-        })
-        recaptcha_result = resp.json()
-
-        if not recaptcha_result.get("success"):
-            flash("Неуспешна проверка от reCAPTCHA. Моля, опитайте отново.", "error")
-            return redirect(url_for("home"))
 
         name = request.form.get("name")
         email = request.form.get("email")
