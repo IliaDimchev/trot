@@ -1,21 +1,47 @@
-{% extends "base.html" %}
-{% block title %}Начало — TROT.BG{% endblock %}
-{% block content %}
-<h1>Форма за запитване</h1>
-<form method="POST">
-    <input type="text" name="name" placeholder="Име" required><br>
-    <input type="email" name="email" placeholder="Имейл" required><br>
-    <input type="tel" name="phone" placeholder="Телефон (08XXXXXXXX)" pattern="^08[789]\d{7}$" required><br>
-    <textarea name="message" placeholder="Съобщение" required></textarea><br>
-    <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
-    <button type="submit">Изпрати</button>
-</form>
-<!-- <script src="https://www.google.com/recaptcha/api.js?render={{ site_key }}"></script>
-<script>
-  grecaptcha.ready(function() {
-    grecaptcha.execute('{{ site_key }}', {action: 'submit'}).then(function(token) {
-      document.getElementById('g-recaptcha-response').value = token;
-    });
-  });
-</script> -->
-{% endblock %}
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TROT - Всичко Електрическо с Любов Оправяме</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-neutral-900 text-white font-sans">
+
+  <!-- Sticky Header -->
+  <header class="sticky top-0 bg-neutral-800 shadow-md z-50">
+    <div class="max-w-5xl mx-auto p-4 flex items-center justify-between">
+      <img src="{{ url_for('static', filename='Trot-Logo.png') }}" alt="TROT Logo" class="h-12">
+    </div>
+  </header>
+
+  <!-- Main Section -->
+  <main class="max-w-3xl mx-auto px-4 py-10 text-center">
+    <h1 class="text-2xl md:text-3xl font-bold mb-4 text-amber-300">
+      Уговори диагностика с мултицет
+    </h1>
+    <p class="mb-8 text-gray-300">
+      Обслужваме електрически тротинетки, скутери и велосипеди. Попълни формата и ще се свържем с теб!
+    </p>
+
+    <form method="POST" class="space-y-4">
+      <input type="hidden" name="form_start" value="{{ timestamp }}">
+      <input type="text" name="website" style="display:none">
+      <input type="text" name="name" placeholder="Име" required
+            class="w-full px-4 py-2 rounded bg-neutral-800 border border-neutral-700 text-white" />
+      <input type="email" name="email" placeholder="Имейл" required
+            class="w-full px-4 py-2 rounded bg-neutral-800 border border-neutral-700 text-white" />
+      <input type="text" name="phone" placeholder="Телефон" pattern="^(\+359|0)?8[789]\d{7}$" required
+            class="w-full px-4 py-2 rounded bg-neutral-800 border border-neutral-700 text-white">
+      <textarea name="message" placeholder="С какво можем да помогнем?" rows="5" required
+            class="w-full px-4 py-2 rounded bg-neutral-800 border border-neutral-700 text-white"></textarea>
+
+      <button type="submit"
+              class="w-full bg-amber-500 hover:bg-amber-600 text-black font-semibold py-2 rounded">
+        Изпрати запитване
+      </button>
+    </form>
+  </main>
+
+</body>
+</html>
