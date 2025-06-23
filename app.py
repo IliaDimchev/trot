@@ -10,9 +10,6 @@ import os
 import csv
 import io
 
-# Не използваме dotenv (не се препоръчва в cPanel)
-# Вместо това, настрой параметрите чрез cPanel > Setup Python App > 
-
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "secret")
@@ -23,22 +20,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # Настройки за имейл
-# app.config['MAIL_SERVER'] = 'smtp.abv.bg'
-# app.config['MAIL_PORT'] = 465
-# app.config['MAIL_USE_SSL'] = True
-# app.config['MAIL_USE_TLS'] = False
-# app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-# app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-# app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME')
-
-# Настройки за имейл
-app.config['MAIL_SERVER'] = 'trot.bg'  # Това трябва да е SMTP на хостинга
+app.config['MAIL_SERVER'] = 'trot.bg'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USERNAME'] = 'noreply@trot.bg'
-app.config['MAIL_PASSWORD'] = os.environ.get('NOREPLY_PASSWORD')  # Или въведи паролата директно
-app.config['MAIL_DEFAULT_SENDER'] = 'noreply@trot.bg'
+app.config['MAIL_USERNAME'] = os.environ.get("SENDER_EMAIL")
+app.config['MAIL_PASSWORD'] = os.environ.get('SENDER_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get("SENDER_EMAIL")
 
 mail = Mail(app)
 
@@ -58,7 +46,7 @@ class ServiceRequest(db.Model):
 # Потребител за админ
 class Admin(UserMixin):
     id = 1
-    username = "admin"
+    username = os.environ.get("ADMIN_LOGIN")
     password = os.environ.get("ADMIN_PASSWORD")
 
 @login_manager.user_loader
@@ -109,7 +97,7 @@ def home():
         try:
             # Красив "From" адрес
             sender_name = str(Header("TROT.BG", 'utf-8'))
-            sender_email = "noreply@trot.bg"
+            sender_email = os.environ.get("SENDER_EMAIL")
             formatted_sender = formataddr((sender_name, sender_email))
 
             admin_msg = Message(
