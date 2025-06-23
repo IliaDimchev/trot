@@ -1,33 +1,21 @@
-<!DOCTYPE html>
-<html lang="bg">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Админ панел - TROT</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-neutral-900 text-white p-6">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold text-amber-400">TROT - Запитвания</h1>
-    <div class="flex gap-2">
-      <a href="{{ url_for('export_csv') }}" class="bg-amber-500 text-black px-4 py-2 rounded hover:bg-amber-600">Експорт в CSV</a>
-      <a href="{{ url_for('logout') }}" class="text-sm text-gray-400 underline">Изход</a>
-    </div>
-  </div>
-  <div class="space-y-4">
+{% extends "base.html" %}
+{% block title %}Админ панел — TROT.BG{% endblock %}
+{% block content %}
+<h1>Админ панел</h1>
+<table>
+    <tr>
+        <th>ID</th><th>Име</th><th>Имейл</th><th>Телефон</th><th>Съобщение</th><th>Действие</th>
+    </tr>
     {% for req in requests %}
-      <div class="border border-neutral-700 p-4 rounded bg-neutral-800">
-        <p><strong>Име:</strong> {{ req.name }}</p>
-        <p><strong>Имейл:</strong> {{ req.email }}</p>
-        <p><strong>Телефон:</strong> {{ req.phone }}</p>
-        <p><strong>Съобщение:</strong> {{ req.message }}</p>
-        <form action="{{ url_for('delete_request', request_id=req.id) }}" method="post" class="mt-2">
-          <button type="submit" class="text-sm text-red-400 hover:underline">Изтрий</button>
-        </form>
-      </div>
-    {% else %}
-      <p class="text-gray-400">Няма запитвания.</p>
+    <tr>
+        <td>{{ req.id }}</td><td>{{ req.name }}</td><td>{{ req.email }}</td><td>{{ req.phone }}</td><td>{{ req.message }}</td>
+        <td>
+            <form action="{{ url_for('delete_request', request_id=req.id) }}" method="post">
+                <button type="submit">Изтрий</button>
+            </form>
+        </td>
+    </tr>
     {% endfor %}
-  </div>
-</body>
-</html>
+</table>
+<a href="{{ url_for('export_csv') }}">Свали CSV</a>
+{% endblock %}
