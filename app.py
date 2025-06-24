@@ -29,6 +29,9 @@ app.config['MAIL_USERNAME'] = os.environ.get("SENDER_EMAIL")
 app.config['MAIL_PASSWORD'] = os.environ.get('SENDER_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.environ.get("SENDER_EMAIL")
 
+MAX_TOTAL_ATTACHMENT_SIZE = 25 * 1024 * 1024  # 25MB
+
+
 mail = Mail(app)
 
 # Flask-Login
@@ -109,11 +112,22 @@ def home():
             sender=formatted_sender,
             charset='utf-8')
 
+            total_size = 0
+
             for file in attachments:
                 if file.filename:
                     filename = secure_filename(file.filename)
                     content = file.read()
                     admin_msg.attach(filename, file.content_type, content)
+
+                if file.filename:
+                    file.seek(0, os.SEEK_END)
+                    total_size += file.tell()
+                    file.seek(0)  # Reset file pointer
+
+            if total_size > MAX_TOTAL_ATTACHMENT_SIZE:
+                flash("Общият размер на прикачените файлове не трябва да надвишава 25MB.", "error")
+                return redirect(url_for("home"))
 
             mail.send(admin_msg)
 
