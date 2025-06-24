@@ -18,15 +18,17 @@
     <input type="hidden" name="form_start" value="{{ timestamp }}">
     <input type="text" name="website" style="display:none">
 
-    <input type="text" name="name" placeholder="Име" required
+    <input type="text" name="name" value="{{ name or '' }}" placeholder="Име" required
       class="w-full px-4 py-2 rounded bg-neutral-800 border border-neutral-700 text-white" />
-    <input type="email" name="email" placeholder="Имейл" required
+    <input type="email" name="email" value="{{ email or '' }}" placeholder="Имейл" required
       class="w-full px-4 py-2 rounded bg-neutral-800 border border-neutral-700 text-white" />
-    <input type="text" name="phone" placeholder="Телефон" pattern="^(\+359|0)?8[789]\d{7}$" required
+    <input type="text" name="phone" value="{{ phone or '' }}" placeholder="Телефон" pattern="^(\+359|0)?8[789]\d{7}$" required
       class="w-full px-4 py-2 rounded bg-neutral-800 border border-neutral-700 text-white">
 
     <textarea name="message" placeholder="С какво можем да помогнем?" rows="5" required
-      class="w-full px-4 py-2 rounded bg-neutral-800 border border-neutral-700 text-white"></textarea>
+      class="w-full px-4 py-2 rounded bg-neutral-800 border border-neutral-700 text-white">
+{{ message or '' }}
+    </textarea>
 
     <label for="attachments"
       class="block w-full cursor-pointer bg-gray-500 hover:bg-gray-600 text-black font-semibold text-center py-2 rounded transition-all duration-200">

@@ -126,8 +126,8 @@ def home():
                     file.seek(0)  # Reset file pointer
 
             if total_size > MAX_TOTAL_ATTACHMENT_SIZE:
-                flash("Общият размер на прикачените файлове не трябва да надвишава 25MB.", "error")
-                return redirect(url_for("home"))
+                flash("Attachments size should be less than 25MB.", "error")
+                return render_template("index.html", name=name, email=email, phone=phone, message=message)
 
             mail.send(admin_msg)
 
