@@ -80,6 +80,14 @@ def home():
         if request.form.get("website"):  # honeypot
             print("SPAM: Honeypot triggered")
             return redirect(url_for("thank_you"))
+        
+        if request.content_length > MAX_TOTAL_ATTACHMENT_SIZE:
+            flash("Attachments size should be less than 25MB.", "error")
+            return render_template("index.html",
+                                   name=request.form.get("name"),
+                                   email=request.form.get("email"),
+                                   phone=request.form.get("phone"),
+                                   message=request.form.get("message"))        
 
         try:
             start_time = float(request.form.get("form_start", 0))
@@ -112,22 +120,11 @@ def home():
             sender=formatted_sender,
             charset='utf-8')
 
-            total_size = 0
-
             for file in attachments:
                 if file.filename:
                     filename = secure_filename(file.filename)
                     content = file.read()
                     admin_msg.attach(filename, file.content_type, content)
-
-                if file.filename:
-                    file.seek(0, os.SEEK_END)
-                    total_size += file.tell()
-                    file.seek(0)  # Reset file pointer
-
-            if total_size > MAX_TOTAL_ATTACHMENT_SIZE:
-                flash("Attachments size should be less than 25MB.", "error")
-                return render_template("index.html", name=name, email=email, phone=phone, message=message)
 
             mail.send(admin_msg)
 
