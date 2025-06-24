@@ -1,5 +1,5 @@
 # coding: cp855
-from flask import Flask, render_template, request, redirect, url_for, send_file, abort, flash
+from flask import Flask, render_template, request, redirect, url_for, send_file, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from flask_login import LoginManager, login_user, login_required, logout_user, UserMixin, current_user
