@@ -5,6 +5,7 @@ from flask_mail import Mail, Message
 from flask_login import LoginManager, login_user, login_required, logout_user, UserMixin, current_user
 from email.header import Header
 from email.utils import formataddr
+from werkzeug.utils import secure_filename
 import time
 import os
 import csv
@@ -89,6 +90,7 @@ def home():
         email = request.form.get("email")
         phone = request.form.get("phone")
         message = request.form.get("message")
+        attachments = request.files.getlist("attachments")
 
         new_request = ServiceRequest(name=name, email=email, phone=phone, message=message)
         db.session.add(new_request)
@@ -106,6 +108,12 @@ def home():
             body=f"Name: {name}\nEmail: {email}\nPhone: {phone}\nMessage: {message}",
             sender=formatted_sender,
             charset='utf-8')
+
+            for file in attachments:
+                if file.filename:
+                    filename = secure_filename(file.filename)
+                    content = file.read()
+                    admin_msg.attach(filename, file.content_type, content)
 
             mail.send(admin_msg)
 
