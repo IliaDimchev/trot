@@ -84,10 +84,12 @@ def home():
         if request.content_length > MAX_TOTAL_ATTACHMENT_SIZE:
             flash("Attachments size should be less than 25MB.", "error")
             return render_template("index.html",
+                                   timestamp=time.time(),
                                    name=request.form.get("name"),
                                    email=request.form.get("email"),
                                    phone=request.form.get("phone"),
-                                   message=request.form.get("message"))        
+                                   message=request.form.get("message"),
+                                   attachments=request.files.getlist("attachments"))        
 
         try:
             start_time = float(request.form.get("form_start", 0))
@@ -145,8 +147,6 @@ def home():
         except Exception as e:
             print("Exception:", e)
         
-            #   print("Имейл грешка:", e)
-
         return redirect(url_for("thank_you"))
     return render_template("index.html", timestamp=time.time())
 
