@@ -5,6 +5,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, U
 from email.header import Header
 from email.utils import formataddr
 from werkzeug.utils import secure_filename
+import datetime
 import time
 import os
 import csv
@@ -103,6 +104,7 @@ def home():
         phone = request.form.get("phone")
         message = request.form.get("message")
         attachments = request.files.getlist("attachments")
+        timestamp = datetime.datetime.now()
 
         new_request = ServiceRequest(name=name, email=email, phone=phone, message=message)
         db.session.add(new_request)
@@ -117,7 +119,7 @@ def home():
             admin_msg = Message(
             subject=str(Header(f"Запитване от {name}", 'utf-8')),
             recipients=["dimchev.ilia@gmail.com"],
-            body=f"Name: {name}\nEmail: {email}\nPhone: {phone}\nMessage: {message}",
+            body=f"Име: {name}\nИмейл: {email}\nТелефон: {phone}\nПолучено на: {timestamp}\nСъобщение: {message}",
             sender=formatted_sender,
             charset='utf-8')
 
