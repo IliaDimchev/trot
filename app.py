@@ -115,7 +115,7 @@ def home():
             formatted_sender = formataddr((sender_name, sender_email))
 
             admin_msg = Message(
-            subject=str(Header(f"TROT - Запитване от {name}", 'utf-8')),
+            subject=str(Header(f"Запитване от {name}", 'utf-8')),
             recipients=["dimchev.ilia@gmail.com"],
             body=f"Name: {name}\nEmail: {email}\nPhone: {phone}\nMessage: {message}",
             sender=formatted_sender,
@@ -130,7 +130,7 @@ def home():
             mail.send(admin_msg)
 
             confirmation = Message(
-            subject=str(Header("Получихве вашето запитване!", 'utf-8')),
+            subject=str(Header("Получихме вашето запитване!", 'utf-8')),
             recipients=[email],
             sender=formatted_sender,
             charset='utf-8')
