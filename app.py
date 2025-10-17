@@ -105,7 +105,7 @@ def home():
         phone = request.form.get("phone")
         message = request.form.get("message")
         attachments = request.files.getlist("attachments")
-        timestamp = time.gmtime(time.time())
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
 
         new_request = ServiceRequest(name=name, email=email, phone=phone, message=message, timestamp=timestamp)
         db.session.add(new_request)
