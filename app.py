@@ -46,6 +46,7 @@ class ServiceRequest(db.Model):
     email = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20), nullable=True)
     message = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.String(30), nullable=True)
 
 # Потребител за админ
 class Admin(UserMixin):
