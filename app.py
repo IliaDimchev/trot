@@ -176,7 +176,7 @@ def delete_request(request_id):
 def export_csv():
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(["ID", "Име", "Имейл", "Съобщение"])
+    writer.writerow(["ID", "Име", "Имейл", "Съобщение", "Дата"])
 
     for req in ServiceRequest.query.all():
         writer.writerow([req.id, req.name, req.email, req.phone, req.message, req.timestamp])
