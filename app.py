@@ -140,12 +140,32 @@ def home():
             
             confirmation.body = (
             f"Здравейте, {name}!\n\n"
-            "Благодарим, че се свързахте с нас. Ще се свържем с вас възможно най-скоро.\n\n"
+            "Благодарим, че се свързахте с нас. Ще се свържем с вас възможно най-скоро!\n\n"
             "Поздрави,\nTROT.BG")
 
             confirmation.html = render_template("email_confirmation.html", name=name)
 
             mail.send(confirmation)
+
+            connection = Message(
+            subject=str(Header("Последвайте ни и в социалните мрежи!", 'utf-8')),
+            recipients=[email],
+            sender=formatted_sender,
+            charset='utf-8')
+            
+            connection.body = (
+            f"Здравейте, {name}!\n\n"
+            "Ще се радваме да се свържем с Вас и в социалните мрежи, където също може да ни пишете.\n\n"
+            "Facebook - https://www.facebook.com/profile.php?id=61575267604907\n"
+            "Instagram - https://www.instagram.com/trotbg/\n\n"
+            "Ще се радваме да се свържем с Вас и в социалните мрежи, където също може да ни пишете.\n\n"
+            "Поздрави,\nTROT.BG")
+
+            connection.html = render_template("email_connection.html", name=name)
+
+            mail.send(connection)
+
+            #TODO: Add Connection and Content Messages
         except Exception as e:
             print("Exception:", e)
         
