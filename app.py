@@ -46,7 +46,7 @@ class ServiceRequest(db.Model):
     email = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20), nullable=True)
     message = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.Date, nullable=False)
+    timestamp = db.Column(db.String(30), nullable=False)
 
 # Потребител за админ
 class Admin(UserMixin):
@@ -105,7 +105,7 @@ def home():
         phone = request.form.get("phone")
         message = request.form.get("message")
         attachments = request.files.getlist("attachments")
-        timestamp = time.time()
+        timestamp = time.gmtime(time.time())
 
         new_request = ServiceRequest(name=name, email=email, phone=phone, message=message, timestamp=timestamp)
         db.session.add(new_request)
