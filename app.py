@@ -158,7 +158,6 @@ def home():
             "Ще се радваме да се свържем с Вас и в социалните мрежи, където също може да ни пишете.\n\n"
             "Facebook - https://www.facebook.com/profile.php?id=61575267604907\n"
             "Instagram - https://www.instagram.com/trotbg/\n\n"
-            "Ще се радваме да се свържем с Вас и в социалните мрежи, където също може да ни пишете.\n\n"
             "Поздрави,\nTROT.BG")
 
             connection.html = render_template("email_connection.html", name=name)
