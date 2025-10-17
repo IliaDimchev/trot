@@ -130,7 +130,7 @@ def home():
             mail.send(admin_msg)
 
             confirmation = Message(
-            subject=str(Header("TROT.BG - Request Received", 'utf-8')),
+            subject=str(Header("TROT.BG - Получено запитване!", 'utf-8')),
             recipients=[email],
             sender=formatted_sender,
             charset='utf-8')
