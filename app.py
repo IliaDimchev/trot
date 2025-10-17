@@ -46,7 +46,6 @@ class ServiceRequest(db.Model):
     email = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20), nullable=True)
     message = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.String(30), nullable=True)
 
 # Потребител за админ
 class Admin(UserMixin):
@@ -105,7 +104,6 @@ def home():
         phone = request.form.get("phone")
         message = request.form.get("message")
         attachments = request.files.getlist("attachments")
-        # timestamp = datetime.datetime.now().strftime("%c")
         timestamp = time.time()
 
         new_request = ServiceRequest(name=name, email=email, phone=phone, message=message, timestamp=timestamp)
@@ -180,7 +178,7 @@ def export_csv():
     writer.writerow(["ID", "Име", "Имейл", "Съобщение"])
 
     for req in ServiceRequest.query.all():
-        writer.writerow([req.id, req.name, req.email, req.phone, req.message, req.timestamp])
+        writer.writerow([req.id, req.name, req.email, req.phone, req.message])
 
     output.seek(0)
     return send_file(io.BytesIO(output.getvalue().encode()),
