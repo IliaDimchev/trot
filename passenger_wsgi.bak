@@ -4,9 +4,7 @@ import os
 # Абсолютният път до вашето приложение
 sys.path.insert(0, os.path.dirname(__file__))
 
-from app import app as application
+from app import app, db
 
-from app import db
-
-with application.app_context():
+with app.app_context():
     db.create_all()
