@@ -5,7 +5,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, U
 from email.header import Header
 from email.utils import formataddr
 from werkzeug.utils import secure_filename
-import datetime
+# import datetime
 import time
 import os
 import csv
@@ -46,6 +46,7 @@ class ServiceRequest(db.Model):
     email = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20), nullable=True)
     message = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.String(30), nullable=True)
 
 # Потребител за админ
 class Admin(UserMixin):
@@ -104,9 +105,10 @@ def home():
         phone = request.form.get("phone")
         message = request.form.get("message")
         attachments = request.files.getlist("attachments")
-        timestamp = datetime.datetime.now().strftime("%c")
+        # timestamp = datetime.datetime.now().strftime("%c")
+        timestamp = time.time()
 
-        new_request = ServiceRequest(name=name, email=email, phone=phone, message=message)
+        new_request = ServiceRequest(name=name, email=email, phone=phone, message=message, timestamp=timestamp)
         db.session.add(new_request)
         db.session.commit()
 
@@ -178,7 +180,7 @@ def export_csv():
     writer.writerow(["ID", "Име", "Имейл", "Съобщение"])
 
     for req in ServiceRequest.query.all():
-        writer.writerow([req.id, req.name, req.email, req.phone, req.message])
+        writer.writerow([req.id, req.name, req.email, req.phone, req.message, req.timestamp])
 
     output.seek(0)
     return send_file(io.BytesIO(output.getvalue().encode()),
