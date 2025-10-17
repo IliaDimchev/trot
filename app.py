@@ -81,7 +81,7 @@ def home():
             return redirect(url_for("thank_you"))
         
         if request.content_length > MAX_TOTAL_ATTACHMENT_SIZE:
-            flash("Attachments size should be less than 25MB.", "error")
+            flash("Прикачените файлове не трябва да надхвърлят 25MB.", "error")
             return render_template("index.html",
                                    timestamp=time.time(),
                                    name=request.form.get("name"),
@@ -115,7 +115,7 @@ def home():
             formatted_sender = formataddr((sender_name, sender_email))
 
             admin_msg = Message(
-            subject=str(Header(f"Request from {name} - TROT", 'utf-8')),
+            subject=str(Header(f"TROT - Запитване от {name}", 'utf-8')),
             recipients=["dimchev.ilia@gmail.com"],
             body=f"Name: {name}\nEmail: {email}\nPhone: {phone}\nMessage: {message}",
             sender=formatted_sender,
@@ -130,7 +130,7 @@ def home():
             mail.send(admin_msg)
 
             confirmation = Message(
-            subject=str(Header("TROT.BG - Получено запитване!", 'utf-8')),
+            subject=str(Header("Получихве вашето запитване!", 'utf-8')),
             recipients=[email],
             sender=formatted_sender,
             charset='utf-8')
